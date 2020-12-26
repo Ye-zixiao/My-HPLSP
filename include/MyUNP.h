@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <sys/stat.h>
 #include <sys/uio.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -40,20 +41,16 @@
 #define OPEN_MAX 1024
 #endif
 
-
+#define DEFAULT_FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define LISTENQ 1024 //最大客户排队连接数
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 
-extern int daemon_proc;
-
-
-void debug(void);
-
-
 /* 错误例程 */
+extern int daemon_proc;
+void debug(void);
 void err_ret(const char* fmt, ...);
 void err_cont(int error, const char* fmt, ...);
 void err_sys(const char* fmt, ...);
@@ -62,6 +59,11 @@ void err_exit(int error, const char* fmt, ...);
 void err_msg(const char* fmt, ...);
 void err_quit(const char* fmt, ...);
 
+
+
+/* 守护进程初始化 */
+int daemon_init(const char* pname, int facility);
+void daemon_inetd(const char* pname, int facility);
 
 
 /* 网络地址辅助函数  */
@@ -119,19 +121,19 @@ void sum_cli2(int sockfd, FILE* fp);
 void dg_echo(int sockfd, struct sockaddr* cliaddr, socklen_t clilen);
 void dg_echox(int sockfd, struct sockaddr* cliaddr, socklen_t clilen);
 void dg_cli(int sockfd, FILE* fp, 
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit0(int sockfd, FILE* fp,
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit1(int sockfd, FILE* fp,
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit2(int sockfd, FILE* fp,
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_cli1(int sockfd, FILE* fp,
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_cli2(int sockfd, FILE* fp, 
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clix(int sockfd, FILE* fp,
-		const struct sockaddr* svaddr, socklen_t svlen);
+        const struct sockaddr* svaddr, socklen_t svlen);
 
 
 
@@ -152,7 +154,7 @@ struct hostent* gethost1(const char* host);
 
 /* 由getaddrinfo()函数派生出的辅助函数 */
 struct addrinfo*
-	host_serv(const char* host, const char* serv, int family, int socktype);
+    host_serv(const char* host, const char* serv, int family, int socktype);
 int tcp_connect(const char* host, const char* serv);
 int tcp_listen(const char* host, const char* serv, socklen_t* addrlen);
 int udp_client(const char* host, const char* serv, struct sockaddr** saptr, socklen_t* lenp);
@@ -174,22 +176,22 @@ ssize_t recv_fd(int sockfd, void* vptr, size_t nbytes, int* recvfd);
 int lock_reg(int fd, int cmd, int lock_type, off_t offset, int whence, int len);
 int lock_test(int fd, int cmd, int lock_type, off_t offset, int whence, int len);
 #define read_lock(fd, offset, whence, len)		\
-		lock_reg((fd), F_SETLK, F_RDLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLK, F_RDLCK, (offset), whence, (len))
 #define readw_lock(fd, offset, whence, len)		\
-		lock_reg((fd), F_SETLKW, F_RDLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLKW, F_RDLCK, (offset), whence, (len))
 #define write_lock(fd, offset, whence, len)		\
-		lock_reg((fd), F_SETLK, F_WRLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLK, F_WRLCK, (offset), whence, (len))
 #define writew_lock(fd, offset, whence, len)		\
-		lock_reg((fd), F_SETLKW, F_WRLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLKW, F_WRLCK, (offset), whence, (len))
 #define unlock(fd, offset, whence, len)			\
-		lock_reg((fd), F_SETLK, F_UNLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLK, F_UNLCK, (offset), whence, (len))
 #define unlock1(fd, offset, whence, len)			\
-		lock_reg((fd), F_SETLKW, F_UNLCK, (offset), whence, (len))
+        lock_reg((fd), F_SETLKW, F_UNLCK, (offset), whence, (len))
 
 
 /* 非阻塞相关函数 */
 int connect_nblk(int sockfd, 
-		const struct sockaddr* svaddr, socklen_t svlen, time_t nsec);
+        const struct sockaddr* svaddr, socklen_t svlen, time_t nsec);
 
 
 

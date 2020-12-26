@@ -3,8 +3,6 @@
 #include <sys/stat.h>
 
 
-#define DEFAULT_FMODE S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-
 int main(int argc, char* argv[])
 {
 	struct stat statbuf;
