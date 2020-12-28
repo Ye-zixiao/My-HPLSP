@@ -23,32 +23,30 @@ int connect_nblk(int sockfd,
 	if ((n = connect(sockfd, svaddr, svlen)) == -1) {
 		if (errno != EINPROGRESS)
 			return -1;
-	}
-	//若TCP立即完成建立，则跳到goto
-	else if (n == 0) goto done;
 
-
-	/* 使用select函数来完成对TCP连接建立的超时记录，并检查返回时
-		是否有错误，若有待处理错误，取之设置errno */
-	FD_ZERO(&rset);
-	FD_SET(sockfd, &rset);
-	wset = rset;
-	tv.tv_sec = nsec;
-	tv.tv_usec = 0;
-	if ((n = select(sockfd + 1, &rset, &wset, NULL, nsec ? &tv : NULL)) == 0) {
-		close(sockfd);
-		errno = ETIMEDOUT;
-		return -1;
-	}
-	if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) {
-		len = sizeof(error);
-		if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
+		/* 若非阻塞connect没有立即建立连接，则使用select函数来完成
+			对TCP连接建立事件的监控，并检查返回时是否有错误，若有待
+			处理错误，取之设置errno */
+		FD_ZERO(&rset);
+		FD_SET(sockfd, &rset);
+		wset = rset;
+		tv.tv_sec = nsec;
+		tv.tv_usec = 0;
+		if ((n = select(sockfd + 1, &rset, &wset, NULL, nsec ? &tv : NULL)) == 0) {
+			close(sockfd);
+			errno = ETIMEDOUT;
 			return -1;
+		}
+		if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) {
+			len = sizeof(error);
+			/* 不管连接是否成功建立，都需要获取套接字的待处理错误 */
+			if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
+				return -1;
+		}
+		else
+			err_quit("select error: sockfd not set");
 	}
-	else
-		err_quit("select error: sockfd not set");
 
-done:
 	if (fcntl(sockfd, F_SETFL, flags) == -1)
 		err_sys("fcntl error");
 	if (error) {

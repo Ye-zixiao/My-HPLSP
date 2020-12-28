@@ -16,6 +16,7 @@ void addfd(int epfd, int fd, int enable_et) {
 }
 
 
+/* 水平触发 */
 void level_trigger(struct epoll_event* ep, int nums, int epfd, int listenfd) {
 	struct sockaddr_storage ss;
 	int sockfd, connfd;
@@ -53,6 +54,7 @@ void level_trigger(struct epoll_event* ep, int nums, int epfd, int listenfd) {
 }
 
 
+/* 边沿触发 */
 void edge_trigger(struct epoll_event* ep, int nums, int epfd, int listenfd) {
 	struct sockaddr_storage ss;
 	int sockfd, connfd;
@@ -73,6 +75,10 @@ void edge_trigger(struct epoll_event* ep, int nums, int epfd, int listenfd) {
 		}
 		else if (ep[i].events & EPOLLIN) {
 			printf("event trigger once\n");
+			/* 边沿触发的特点在于epoll只会通知应用进程该事件一次，之后不会
+				再另行通知，因此应用进程必须通过while循环一次性将数据从缓冲
+				区中取出。这样的好处在于应用进程不需要对同一事件重复调用多次
+				读写操作，大大提高了处理事件的效率    */
 			while ((nrecv = read(sockfd, buf, sizeof(buf) - 1)) > 0) {
 				buf[nrecv] = 0;
 				printf("get %ld bytes of content: %s\n", nrecv, buf);

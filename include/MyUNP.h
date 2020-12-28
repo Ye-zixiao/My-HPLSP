@@ -35,6 +35,7 @@
 
 #define INFTIM -1
 #define BUFSIZE 4096
+#define MBUFSIZE 1024
 #define SBUFSIZE 64
 #define MAXLINE BUFSIZE
 #ifndef OPEN_MAX
