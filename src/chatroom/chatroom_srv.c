@@ -11,7 +11,7 @@
 /* 记录相应聊天室客户信息，可以认为是
 	套接字描述符到客户信息的HashMap */
 struct client_data {
-	//struct sockaddr_in cliaddr;
+	struct sockaddr_in cliaddr;
 	char* writebuf;
 	char buf[SBUFSIZE];
 } users[FD_LIMITS];
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 				fds[user_cnt].fd = connfd;
 				fds[user_cnt].events = POLLIN | POLLRDHUP | POLLERR;
 				fds[user_cnt].revents = 0;
-				//users[connfd].cliaddr = cliaddr;
+				users[connfd].cliaddr = cliaddr;
 				if (set_fl(connfd, O_NONBLOCK) == -1)
 					err_sys("set_fl error");
 				printf("comes a new user(%s), now has %d users\n",
@@ -77,11 +77,12 @@ int main(int argc, char* argv[])
 			}
 			//连接被对方关闭，此时也应该相应的对fds数组和users数组进行更新
 			else if (fds[i].revents & POLLRDHUP) {
+				printf("client(%s) left\n", sock_ntop((const struct sockaddr*)&users[fds[i].fd].cliaddr,
+					sizeof(users[fds[i].fd].cliaddr)));
 				users[fds[i].fd] = users[fds[user_cnt].fd];
 				if (close(fds[i].fd) == -1)
 					err_sys("close error");
 				fds[i--] = fds[user_cnt--];
-				printf("a client left\n");
 			}
 			else if (fds[i].revents & POLLIN) {
 				connfd = fds[i].fd;

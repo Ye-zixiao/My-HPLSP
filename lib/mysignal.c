@@ -1,6 +1,7 @@
 #include "MyUNP.h"
 
-Sigfunc* mysignal(int signo, Sigfunc* func) {
+
+__sighandler_t mysignal(int signo, __sighandler_t func) {
 	struct sigaction	 act, oact;
 
 	act.sa_handler = func;
@@ -14,7 +15,7 @@ Sigfunc* mysignal(int signo, Sigfunc* func) {
 	else {
 #ifdef SA_RESTART
 		/* 实际上Linux系统自带的signal函数会
-			默认重启动被中断的系统调用*/
+			默认重启动被中断的系统调用 */
 		act.sa_flags |= SA_RESTART;
 #endif
 	}

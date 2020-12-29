@@ -33,7 +33,7 @@ void dg_cli(int sockfd, FILE* fp,
 void dg_clit0(int sockfd, FILE* fp, 
 		const struct sockaddr* svaddr, socklen_t svlen) {
 	char sendline[MAXLINE], recvline[MAXLINE + 1];
-	Sigfunc* old_sigfunc;
+	__sighandler_t old_sigfunc;
 	ssize_t nrecv;
 
 	if ((old_sigfunc = mysignal(SIGALRM, sig_alrm)) == SIG_ERR)
