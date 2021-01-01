@@ -1,9 +1,11 @@
 CC := g++
 ROOT := ..
 INCLUDE := $(ROOT)/include
-LIBPATH := $(ROOT)/lib
+CLIBPATH := $(ROOT)/lib
+CPPLIBPATH := $(ROOT)/lib-cpp
 
-DFLAGS := -Wl,-rpath $(LIBPATH) -L$(LIBPATH) -lmyunp -lpthread
+DFLAGS := -Wl,-rpath $(CLIBPATH) -L$(CLIBPATH) -lmyunp -Wl,-rpath $(CPPLIBPATH) \
+	-L$(CPPLIBPATH) -lmyunpc++ -lpthread
 CFLAGS := -I$(INCLUDE) -O -Wall
 
 SRCS := $(wildcard *.cpp)
@@ -14,7 +16,8 @@ PRGS := $(SRCS:.cpp=)
 all: LIBUNP $(PRGS)
 
 LIBUNP:
-	cd $(LIBPATH) && make -j4
+	cd $(CLIBPATH) && make -j4
+	cd $(CPPLIBPATH) && make -j4
 
 $(PRGS):%:%.o
 	$(CC) -o $@ $< $(DFLAGS)

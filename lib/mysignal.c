@@ -1,10 +1,10 @@
 #include "MyUNP.h"
 
 
-__sighandler_t mysignal(int signo, __sighandler_t func) {
+__sighandler_t mysignal(int signo, __sighandler_t handler) {
 	struct sigaction	 act, oact;
 
-	act.sa_handler = func;
+	act.sa_handler = handler;
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if (signo == SIGALRM) {
@@ -20,6 +20,19 @@ __sighandler_t mysignal(int signo, __sighandler_t func) {
 #endif
 	}
 	
+	if (sigaction(signo, &act, &oact) == -1)
+		return SIG_ERR;
+	return oact.sa_handler;
+}
+
+
+__sighandler_t mysignal1(int signo, __sighandler_t handler) {
+	struct sigaction act, oact;
+
+	bzero(&act, sizeof(act));
+	act.sa_handler = handler;
+	act.sa_flags |= SA_RESTART;
+	sigfillset(&act.sa_mask);
 	if (sigaction(signo, &act, &oact) == -1)
 		return SIG_ERR;
 	return oact.sa_handler;

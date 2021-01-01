@@ -1,6 +1,7 @@
 #ifndef MY_UNPXFE34_H_
 #define MY_UNPXFE34_H_
 
+#define _POSIX_C_SOURCE 200809L
 #define _XOPEN_SOURCE 700
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -95,7 +96,8 @@ char* currtime_r(char* buf, size_t maxlen, const char* fmt);
 
 
 /* 自定义信号处理程序安装 */
-sighandler_t mysignal(int signo, __sighandler_t func);
+sighandler_t mysignal(int signo, __sighandler_t handler);
+sighandler_t mysignal1(int signo, __sighandler_t handler);
 
 
 
@@ -205,6 +207,7 @@ void pr_cpu_time(void);
 void web_child(int sockfd);
 void web_child_r(int sockfd);
 void web_child_r1(int sockfd);
+
 
 
 #endif //!MY_UNPXFE34_H_
