@@ -207,6 +207,7 @@ void pr_cpu_time(void);
 void web_child(int sockfd);
 void web_child_r(int sockfd);
 void web_child_r1(int sockfd);
+void add2epoll(int epfd, int fd);
 
 
 
