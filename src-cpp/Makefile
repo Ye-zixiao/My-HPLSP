@@ -4,8 +4,8 @@ INCLUDE := $(ROOT)/include
 CLIBPATH := $(ROOT)/lib
 CPPLIBPATH := $(ROOT)/lib-cpp
 
-DFLAGS := -Wl,-rpath $(CLIBPATH) -L$(CLIBPATH) -lmyunp -Wl,-rpath $(CPPLIBPATH) \
-	-L$(CPPLIBPATH) -lmyunpc++ -lpthread
+DFLAGS := -Wl,-rpath $(CLIBPATH) -L$(CLIBPATH) -lmyunp -levent
+	#-Wl,-rpath $(CPPLIBPATH) -L$(CPPLIBPATH) -lmyunpc++ -lpthread
 CFLAGS := -I$(INCLUDE) -O -Wall
 
 SRCS := $(wildcard *.cpp)
@@ -17,7 +17,7 @@ all: LIBUNP $(PRGS)
 
 LIBUNP:
 	cd $(CLIBPATH) && make -j4
-	cd $(CPPLIBPATH) && make -j4
+	#cd $(CPPLIBPATH) && make -j4
 
 $(PRGS):%:%.o
 	$(CC) -o $@ $< $(DFLAGS)

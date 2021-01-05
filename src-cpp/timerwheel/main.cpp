@@ -1,6 +1,4 @@
-extern "C" {
 #include "MyUNP.h"
-}
 #include "TimerWheel.h"
 #include <iostream>
 

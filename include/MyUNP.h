@@ -7,6 +7,11 @@
 #define _GNU_SOURCE
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -121,20 +126,20 @@ void sum_cli2(int sockfd, FILE* fp);
 
 void dg_echo(int sockfd, struct sockaddr* cliaddr, socklen_t clilen);
 void dg_echox(int sockfd, struct sockaddr* cliaddr, socklen_t clilen);
-void dg_cli(int sockfd, FILE* fp, 
-        const struct sockaddr* svaddr, socklen_t svlen);
+void dg_cli(int sockfd, FILE* fp,
+    const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit0(int sockfd, FILE* fp,
-        const struct sockaddr* svaddr, socklen_t svlen);
+    const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit1(int sockfd, FILE* fp,
-        const struct sockaddr* svaddr, socklen_t svlen);
+    const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clit2(int sockfd, FILE* fp,
-        const struct sockaddr* svaddr, socklen_t svlen);
+    const struct sockaddr* svaddr, socklen_t svlen);
 void dg_cli1(int sockfd, FILE* fp,
-        const struct sockaddr* svaddr, socklen_t svlen);
-void dg_cli2(int sockfd, FILE* fp, 
-        const struct sockaddr* svaddr, socklen_t svlen);
+    const struct sockaddr* svaddr, socklen_t svlen);
+void dg_cli2(int sockfd, FILE* fp,
+    const struct sockaddr* svaddr, socklen_t svlen);
 void dg_clix(int sockfd, FILE* fp,
-        const struct sockaddr* svaddr, socklen_t svlen);
+    const struct sockaddr* svaddr, socklen_t svlen);
 
 
 
@@ -178,22 +183,22 @@ ssize_t recv_fd(int sockfd, void* vptr, size_t nbytes, int* recvfd);
 int lock_reg(int fd, int cmd, int lock_type, off_t offset, int whence, int len);
 int lock_test(int fd, int cmd, int lock_type, off_t offset, int whence, int len);
 #define read_lock(fd, offset, whence, len)		\
-        lock_reg((fd), F_SETLK, F_RDLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLK, F_RDLCK, (offset), whence, (len))
 #define readw_lock(fd, offset, whence, len)		\
-        lock_reg((fd), F_SETLKW, F_RDLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLKW, F_RDLCK, (offset), whence, (len))
 #define write_lock(fd, offset, whence, len)		\
-        lock_reg((fd), F_SETLK, F_WRLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLK, F_WRLCK, (offset), whence, (len))
 #define writew_lock(fd, offset, whence, len)		\
-        lock_reg((fd), F_SETLKW, F_WRLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLKW, F_WRLCK, (offset), whence, (len))
 #define unlock(fd, offset, whence, len)			\
-        lock_reg((fd), F_SETLK, F_UNLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLK, F_UNLCK, (offset), whence, (len))
 #define unlock1(fd, offset, whence, len)			\
-        lock_reg((fd), F_SETLKW, F_UNLCK, (offset), whence, (len))
+    lock_reg((fd), F_SETLKW, F_UNLCK, (offset), whence, (len))
 
 
 /* 非阻塞相关函数 */
-int connect_nblk(int sockfd, 
-        const struct sockaddr* svaddr, socklen_t svlen, time_t nsec);
+int connect_nblk(int sockfd,
+    const struct sockaddr* svaddr, socklen_t svlen, time_t nsec);
 
 
 
@@ -208,6 +213,10 @@ void web_child(int sockfd);
 void web_child_r(int sockfd);
 void web_child_r1(int sockfd);
 void add2epoll(int epfd, int fd);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 
 
