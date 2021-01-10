@@ -38,6 +38,8 @@ extern "C" {
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include "myerror.h"
+
 #define INFTIM -1
 #define BUFSIZE 4096
 #define MBUFSIZE 1024
@@ -54,19 +56,6 @@ extern "C" {
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 
-/* 错误例程 */
-extern int daemon_proc;
-void debug(void);
-void err_ret(const char* fmt, ...);
-void err_cont(int error, const char* fmt, ...);
-void err_sys(const char* fmt, ...);
-void err_dump(const char* fmt, ...);
-void err_exit(int error, const char* fmt, ...);
-void err_msg(const char* fmt, ...);
-void err_quit(const char* fmt, ...);
-
-
-
 /* 守护进程初始化 */
 int daemon_init(const char* pname, int facility);
 void daemon_inetd(const char* pname, int facility);
@@ -74,7 +63,6 @@ void daemon_inetd(const char* pname, int facility);
 
 /* 网络地址辅助函数  */
 char* sock_ntop(const struct sockaddr* sockaddr, socklen_t addrlen);
-
 
 
 /* 流式套接字指定字节的读写 */
@@ -92,18 +80,14 @@ ssize_t writen(int fd, const void* buf, size_t nbytes);
 #endif
 
 
-
 /* 时间状态函数 */
 const char* currtime(const char* fmt);
 const char* currtime_p(const char* ignore);
 char* currtime_r(char* buf, size_t maxlen, const char* fmt);
 
-
-
 /* 自定义信号处理程序安装 */
 sighandler_t mysignal(int signo, __sighandler_t handler);
 sighandler_t mysignal1(int signo, __sighandler_t handler);
-
 
 
 /* 回射客户-服务器辅助函数 */
@@ -142,7 +126,6 @@ void dg_clix(int sockfd, FILE* fp,
     const struct sockaddr* svaddr, socklen_t svlen);
 
 
-
 /* 文件控制函数 */
 int set_fd(int fd, int nflag);
 int set_fl(int fd, int nflag);
@@ -150,12 +133,10 @@ int clr_fd(int fd, int cflag);
 int clr_fl(int fd, int cflag);
 
 
-
 /* 地址解析辅助函数 */
 struct servent* getserv(const char* name_or_port, const char* protoname);
 int gethost(struct in_addr* addrArr, int n, const char* name);
 struct hostent* gethost1(const char* host);
-
 
 
 /* 由getaddrinfo()函数派生出的辅助函数 */
@@ -166,7 +147,6 @@ int tcp_listen(const char* host, const char* serv, socklen_t* addrlen);
 int udp_client(const char* host, const char* serv, struct sockaddr** saptr, socklen_t* lenp);
 int udp_connect(const char* host, const char* serv);
 int udp_server(const char* host, const char* serv, socklen_t* lenp);
-
 
 
 /* 高级I/O函数 */
@@ -201,10 +181,8 @@ int connect_nblk(int sockfd,
     const struct sockaddr* svaddr, socklen_t svlen, time_t nsec);
 
 
-
 /* 线程相关函数 */
 int pthread_create_detached(pthread_t* thread, void* (*pf)(void*), void* arg);
-
 
 
 /* 其他 */
@@ -214,10 +192,9 @@ void web_child_r(int sockfd);
 void web_child_r1(int sockfd);
 void add2epoll(int epfd, int fd);
 
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-
-
 
 #endif //!MY_UNPXFE34_H_

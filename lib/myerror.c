@@ -1,11 +1,12 @@
-#include "MyUNP.h"
+#include "myerror.h"
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <syslog.h>
 
 int daemon_proc;
-
-#define ERRMSG_LEN	128
-
 
 /**
  * 处理真正的错误消息输出的功能
@@ -119,8 +120,10 @@ void err_quit(const char* fmt, ...) {
 }
 
 
+#ifdef DEBUG
 /* 自定义调试函数 */
 void debug(void) {
 	static int cnt = 0;
 	fprintf(stderr, "get here(%d)?\n", cnt++);
 }
+#endif // DEBUG

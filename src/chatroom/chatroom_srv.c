@@ -2,7 +2,7 @@
 
 /** 
  * 聊天室服务程序，将从客户收到的消息发送
- * 给其他除发送者用户之外的其他用户
+ * 给其他除发送者用户之外的其他用户（使用单线程进程）
  */
 
 #define USER_LIMITS 6
@@ -16,6 +16,11 @@ struct client_data {
 	char buf[SBUFSIZE];
 } users[FD_LIMITS];
 
+/**
+ * 最重要的两个资源（经常发生改变更新）：
+ *   1、用户信息users;
+ *   2、pollfd数组fds（我应该将其命名为pollfds的！）
+ */
 
 
 int main(int argc, char* argv[])
