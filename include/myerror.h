@@ -18,9 +18,7 @@ void err_dump(const char* fmt, ...);
 void err_msg(const char* fmt, ...);
 void err_quit(const char* fmt, ...);
 
-#ifdef DEBUG
 void debug(void);
-#endif
 
 
 #ifdef __cplusplus

@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 			basename(argv[0]));
 
 	sockfd = tcp_connect(argv[1], argv[2]);
-	if (pipe(pipefds) == -1)
+	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pipefds) == -1)
 		err_sys("pipe error");
 	fds[0].fd = STDIN_FILENO;
 	fds[0].events = POLLIN;
@@ -43,12 +43,23 @@ int main(int argc, char* argv[])
 			printf("\n%s\nother: %s", currtime("%T"), buf);
 		}
 		if (fds[0].revents & POLLIN) {
-			if ((nread = splice(STDIN_FILENO, NULL, pipefds[1], NULL,
-				32768, SPLICE_F_MORE | SPLICE_F_MOVE)) == -1)
-				err_sys("splice error");
-			if (splice(pipefds[0], NULL, sockfd, NULL, nread,
-				SPLICE_F_MORE | SPLICE_F_MOVE) == -1)
-				err_sys("splice error");
+			// if ((nread = splice(STDIN_FILENO, NULL, pipefds[1], NULL,
+			// 	32768, SPLICE_F_MORE | SPLICE_F_MOVE)) == -1)
+			// 	err_sys("splice error");
+			// if (splice(pipefds[0], NULL, sockfd, NULL, nread,
+			// 	SPLICE_F_MORE | SPLICE_F_MOVE) == -1)
+			// 	err_sys("splice error");
+			if((nread = read(STDIN_FILENO, buf, sizeof(buf) - 1)) == -1)
+				err_sys("read error");
+			else if(nread == 0) break;
+			buf[nread] = 0;
+			if(write(sockfd, buf, strlen(buf)) != strlen(buf))
+				err_sys("write error");
 		}
 	}
+
+	close(sockfd);
+	close(pipefds[0]);
+	close(pipefds[1]);
+	exit(EXIT_SUCCESS);
 }

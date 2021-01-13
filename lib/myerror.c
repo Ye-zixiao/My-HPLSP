@@ -120,10 +120,8 @@ void err_quit(const char* fmt, ...) {
 }
 
 
-#ifdef DEBUG
 /* 自定义调试函数 */
 void debug(void) {
 	static int cnt = 0;
 	fprintf(stderr, "get here(%d)?\n", cnt++);
 }
-#endif // DEBUG

@@ -3,7 +3,7 @@ ROOT := ../..
 INCLUDE := $(ROOT)/include
 LIBPATH := $(ROOT)/lib
 
-DFLAGS := -Wl,-rpath $(LIBPATH) -L$(LIBPATH) -lmyunp -lpthread
+DFLAGS := -Wl,-rpath $(LIBPATH) -L$(LIBPATH) -lmyunp -lpthread -lrt
 CFLAGS := -I$(INCLUDE) -O -Wall
 
 SRCS := $(wildcard *.c)

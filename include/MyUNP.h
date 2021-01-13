@@ -131,6 +131,7 @@ int set_fd(int fd, int nflag);
 int set_fl(int fd, int nflag);
 int clr_fd(int fd, int cflag);
 int clr_fl(int fd, int cflag);
+#define setnonblocking(fd) set_fl((fd), O_NONBLOCK)
 
 
 /* 地址解析辅助函数 */
