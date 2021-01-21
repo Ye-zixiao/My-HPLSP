@@ -1,5 +1,3 @@
-[TOC]
-
 # My-HPLSP
 
 ## 1. 协议总览
@@ -516,7 +514,7 @@ int main(int argc, char* argv[])
 
 而在半同步/半反应堆模式的改进版本中，主线程不再负责已连接套接字上的事件监听，而是直接将连接套接字分发给某一个工作线程，让工作线程能够同时对多个已连接套接字进行监听，自己却只负责连接请求事件的监听。这样的好处在于①主线程的负担减小；②请求队列上的加/解锁次数减少，因为此时服务器并不再需要为每一个I/O事件而重复将描述符放入到请求队列中；③工作线程可以为多个客户上的事件进行监控并处理。
 
-<img src="../SGI-STL/image/屏幕截图 2021-01-10 163310.png" alt="屏幕截图 2021-01-10 163310"  />
+<img src="img/屏幕截图 2021-01-20 164835.png" alt="屏幕截图 2021-01-20 164835" style="zoom: 80%;" />
 
 
 
@@ -637,13 +635,14 @@ Linux主要提供了如下3种定时方式：
 
 参考资料：
 
+>http://www.wangafu.net/~nickm/libevent-book/
+>
 >https://segmentfault.com/a/1190000005594871
 >
 >https://segmentfault.com/a/1190000005601925
 >
 >https://segmentfault.com/a/1190000005867855
 >
->http://www.wangafu.net/~nickm/libevent-book/
 
 
 
@@ -654,4 +653,8 @@ Linux主要提供了如下3种定时方式：
 <img src="img/chatroom.jpg" alt="chatroom" style="zoom: 50%;" />
 
 
+
+### 6.2 一个使用半同步/半异步并发模式（改进版）进程池的CGI服务器
+
+<img src="img/cgi半异步半同步.jpg" alt="cgi半异步半同步" style="zoom: 50%;" />
 
