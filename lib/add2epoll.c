@@ -12,3 +12,11 @@ void add2epoll(int epfd, int fd) {
 	if (set_fl(fd, O_NONBLOCK) == -1)
 		err_sys("set_fl error");
 }
+
+
+void rmfdepoll(int epfd, int fd) {
+	if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
+		err_sys("epoll_ctl error");
+	if (close(fd) == -1)
+		err_sys("close error");
+}

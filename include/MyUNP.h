@@ -50,6 +50,8 @@ extern "C" {
 #endif
 
 #define DEFAULT_FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define DEFAULT_SHM_MODE (S_IRUSR | S_IW_USR | S_IRGRP | \
+        S_IWGRP | S_IROTH | S_IWOTH) //即所谓的0666
 #define LISTENQ 1024 //最大客户排队连接数
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -192,6 +194,7 @@ void web_child(int sockfd);
 void web_child_r(int sockfd);
 void web_child_r1(int sockfd);
 void add2epoll(int epfd, int fd);
+void rmfdepoll(int epfd, int fd);
 
 
 #ifdef __cplusplus
