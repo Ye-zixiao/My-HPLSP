@@ -173,9 +173,9 @@ int lock_test(int fd, int cmd, int lock_type, off_t offset, int whence, int len)
     lock_reg((fd), F_SETLK, F_WRLCK, (offset), whence, (len))
 #define writew_lock(fd, offset, whence, len)		\
     lock_reg((fd), F_SETLKW, F_WRLCK, (offset), whence, (len))
-#define unlock(fd, offset, whence, len)			\
+#define funlock(fd, offset, whence, len)			\
     lock_reg((fd), F_SETLK, F_UNLCK, (offset), whence, (len))
-#define unlock1(fd, offset, whence, len)			\
+#define funlock1(fd, offset, whence, len)			\
     lock_reg((fd), F_SETLKW, F_UNLCK, (offset), whence, (len))
 
 
