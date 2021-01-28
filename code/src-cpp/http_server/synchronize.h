@@ -1,3 +1,7 @@
+/*
+ * 简单的封装pthread库中的同步对象
+ */
+
 #ifndef SYNCHRONIZE_H_
 #define SYNCHRONIZE_H_
 
@@ -5,9 +9,6 @@
 #include <semaphore.h>
 #include <exception>
 
-/**
- * 简单的封装pthread同步对象
- */
 
 //信号量的封装类
 class Sem {
@@ -60,10 +61,10 @@ public:
 	}
 
 	bool wait() {
-		int ret;
+		int ret = 0;
 		pthread_mutex_lock(&m_cond_mutex);
+		//将当前线程加入到条件变量相关的等待队列之中，然后休眠
 		ret = pthread_cond_wait(&m_cond, &m_cond_mutex);
-		//另一种策略是在cond_signal()之后解锁
 		pthread_mutex_unlock(&m_cond_mutex);
 		return ret == 0;
 	}
@@ -71,8 +72,7 @@ public:
 
 private:
 	pthread_cond_t m_cond;
-	//该互斥量只负责条件变量的保护
-	pthread_mutex_t m_cond_mutex;
+	pthread_mutex_t m_cond_mutex;	//仅负责保护条件变量
 };
 
 

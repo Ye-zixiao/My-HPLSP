@@ -3,15 +3,17 @@
 
 #include <queue>
 #include <iostream>
-#include "MyUNP.h"
+#include <pthread.h>
 #include "synchronize.h"
+
+extern "C" { int pthread_create_detached(pthread_t*, void* (*)(void*), void*); }
+
 
 template<typename Task>
 class threadpool {
 public:
-	threadpool(int nthread = 4, int max_ntask = 1024) :
-		m_nthread(nthread), m_max_ntask(max_ntask), m_stop(false),
-		m_threads(nullptr) {
+	threadpool(int nthread = 4, size_t max_ntask = 1024) :
+		m_threads(nullptr), m_nthread(nthread), m_max_ntask(max_ntask), m_stop(false) {
 		if (nthread <= 0 || max_ntask <= 0) throw std::exception();
 		m_threads = new pthread_t[m_nthread];
 
@@ -26,11 +28,11 @@ public:
 	threadpool(const threadpool&) = delete;
 	~threadpool() { delete[] m_threads; m_stop = true; }
 
-	/* ¹©Ö÷Ïß³ÌÊ¹ÓÃ£¬µ±ÓĞĞÂµÄÊÂ¼şµ½´ïÊ±¿ÉÒÔ½«Æä·â×°³ÉÈÎÎñ¶ÔÏó
-		ºó¼ÓÈëµ½¹¤×÷ÇëÇó¶ÓÁĞÈÃ¹¤×÷Ïß³Ì¶ÔÆä½øĞĞ´¦Àí */
+	/* ä¾›ä¸»çº¿ç¨‹ä½¿ç”¨ï¼Œå½“æœ‰æ–°çš„äº‹ä»¶åˆ°è¾¾æ—¶å¯ä»¥å°†å…¶å°è£…æˆä»»åŠ¡å¯¹è±¡
+		ååŠ å…¥åˆ°å·¥ä½œè¯·æ±‚é˜Ÿåˆ—è®©å·¥ä½œçº¿ç¨‹å¯¹å…¶è¿›è¡Œå¤„ç† */
 	bool append(Task* task) {
 		m_queuelocker.lock();
-		if (m_workqueue.size() > m_max_ntask) {
+		if (m_workqueue.size() >= m_max_ntask) {
 			m_queuelocker.unlock();
 			return false;
 		}
@@ -47,13 +49,15 @@ private:
 private:
 	std::queue<Task*> m_workqueue;
 	pthread_t* m_threads;
+	int m_nthread;
+
 	Locker m_queuelocker;
+	size_t m_max_ntask;
 	Sem m_queuestat;
 
-	int m_nthread;
-	int m_max_ntask;
-	int m_stop;
+	bool m_stop;
 };
+
 
 
 template<typename Task>
@@ -66,6 +70,7 @@ void* threadpool<Task>::worker_thread(void* args) {
 template<typename Task>
 void threadpool<Task>::run() {
 	while (!m_stop) {
+		//ç­‰å¾…è¯·æ±‚é˜Ÿåˆ—ä¸­æœ‰ä»»åŠ¡å¯¹è±¡è¢«ä¸»çº¿ç¨‹åŠ å…¥
 		m_queuestat.wait();
 		m_queuelocker.lock();
 		if (m_workqueue.empty()) {
@@ -78,6 +83,8 @@ void threadpool<Task>::run() {
 		if (!task) continue;
 		task->process();
 	}
+	/* åªæœ‰è¿›ç¨‹å³å°†ç»ˆæ­¢æ—¶ææ„äº†çº¿ç¨‹æ± ç±»å¯¹è±¡æ‰ä¼š
+		ä½¿å·¥ä½œçº¿ç¨‹åœæ­¢å·¥ä½œ */
 }
 
 
