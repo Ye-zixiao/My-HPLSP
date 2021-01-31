@@ -217,9 +217,8 @@ http_conn::HTTP_CODE http_conn::process_read() {
 		case CHECK_STATE_HEADER:
 			if ((ret = parse_headers(text)) == BAD_REQUEST)
 				return BAD_REQUEST;
-			else if (ret == GET_REQUEST) {
+			else if (ret == GET_REQUEST)
 				return do_request();
-			}
 			break;
 		case CHECK_STATE_CONTENT:
 			if ((ret = parse_content(text)) == GET_REQUEST)
@@ -281,9 +280,6 @@ bool http_conn::write() {
 			unmap();
 			return false;
 		}
-
-		//？
-		//bytes_to_send -= nwrite;
 		bytes_have_send += nwrite;
 	}
 
@@ -293,7 +289,6 @@ bool http_conn::write() {
 		modfd(m_epfd, m_sockfd, EPOLLIN);
 		return true;
 	}
-	modfd(m_epfd, m_sockfd, EPOLLIN);
 	return false;
 }
 
@@ -391,7 +386,6 @@ bool http_conn::process_write(HTTP_CODE ret) {
 /* 工作线程处理HTTP请求任务的入口函数 */
 void http_conn::process() {
 	HTTP_CODE read_ret = process_read();
-	std::cerr<<"read done"<<std::endl;
 	if (read_ret == NO_REQUEST) {
 		modfd(m_epfd, m_sockfd, EPOLLIN);
 		return;
@@ -404,5 +398,4 @@ void http_conn::process() {
 	if (process_write(read_ret))
 		modfd(m_epfd, m_sockfd, EPOLLOUT);
 	else close_conn();
-	std::cerr<<"write done\n------"<<std::endl;
 }

@@ -1,8 +1,15 @@
 #include "http_conn.h"
-#include "threadpool.h"
+#include "threadpool1.h"
+
+/**
+ * 这个程序的缺点是：若客户是以keep-alive的方式连接到这个服务器，
+ * 那么一旦客户进程突然崩溃或被意外关闭，那么服务器可能还会为它
+ * 保持着连接，我个人感觉。
+ */
+
 
 #define MAX_FD 65536
-#define MAX_EVENT_NUM 10240
+#define MAX_EVENT_NUM 1024
 
 static bool stop = false;
 
@@ -26,18 +33,15 @@ int main(int argc, char* argv[])
 	mysignal1(SIGPIPE, SIG_IGN);
 	mysignal1(SIGINT, sig_handler);
 	mysignal1(SIGQUIT, sig_handler);
-	mysignal1(SIGTERM, sig_handler);
 
 	//创建工作线程池
 	threadpool<http_conn>* pool = nullptr;
-	try { pool = new threadpool<http_conn>(8,12000); }
+	try { pool = new threadpool<http_conn>(); }
 	catch (...) { exit(EXIT_FAILURE); }
 	//创建用户信息数据表
 	http_conn* users = new http_conn[MAX_FD];
 
 	int listenfd = tcp_listen(nullptr, argv[1], nullptr);
-	struct linger lingerbuf{1, 0};
-	setsockopt(listenfd, SOL_SOCKET, SOL_SOCKET, &lingerbuf, sizeof(lingerbuf));
 	struct epoll_event events[MAX_EVENT_NUM];
 	int epfd = epoll_create(5);
 	addfd(epfd, listenfd, false);
@@ -72,6 +76,7 @@ int main(int argc, char* argv[])
 			}
 			else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
 				users[sockfd].close_conn();
+			/* 这种方式我更觉得像是模拟Proactor模式，而不是在构建Reactor模式 */
 			else if (events[i].events & EPOLLIN) {
 				if (users[sockfd].read())
 					pool->append(users + sockfd);
