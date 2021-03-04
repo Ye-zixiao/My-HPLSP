@@ -53,7 +53,7 @@ Process_Pool<User_Data>::m_instance = nullptr;
 /* 构造进程池，池中的每一个进程与父进程使用管道进行相连 */
 template<typename User_Data>
 Process_Pool<User_Data>::Process_Pool(int listenfd, int procnum) :
-	m_process_num(procnum), m_listenfd(listenfd), m_epfd(-1), m_process_idx(-1) {
+	m_process_num(procnum), m_process_idx(-1), m_listenfd(listenfd), m_epfd(-1) {
 	if (procnum <= 0 && procnum > MAX_PROCESS_NUM)
 		err_quit("process number oversize");
 	m_sub_proccess = new Process_Data[procnum];
